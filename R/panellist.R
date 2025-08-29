@@ -140,10 +140,10 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     do.call(what = rbind, args = _)
   
   d <- data.frame(
-    'Variants Collection' = v |> names(),
+    'Variant-Collection' = v |> names(),
     'True (+)' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
     'False (+)' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
-    'Variants' = v |>
+    'Variants in Collection' = v |>
       vapply(FUN = paste, collapse = '\n', FUN.VALUE = NA_character_),
     check.names = FALSE
   )
@@ -154,7 +154,7 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     }, FUN.VALUE = '')) |>
     mapply(FUN = \(x, vs) {
       ifelse(test = names(v) %in% names(vs), 
-             yes = x@label, #sprintf(fmt = '\u2264%d/%d', max_fp, ncol(m0.)), 
+             yes = x@label,
              no = '')
     }, x = _, vs = vs, SIMPLIFY = FALSE) |>
     as.data.frame.list(check.names = FALSE)
@@ -170,7 +170,7 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     highlight(i = (nvr > 1L), j = length(d), color = 'lightyellow') |>
     align(align = 'right', part = 'all') |>
     add_header_row(
-      values = c('Collection of Variants', 'Individual', 'Variants in Collection', 'Panel'), 
+      values = c('Variant-Collection', 'Individual', 'Variants in Collection', 'Panel'), 
       colwidths = c(1L, 2L, 1L, length(tmp)), 
       top = TRUE) |> 
     merge_v(part = 'header') |>

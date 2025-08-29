@@ -27,6 +27,9 @@ vignette: >
 
 This vignette of package **`minPanel`** ([Github](https://github.com/tingtingzhan/minPanel)) presents ...
 
+To cite this methodology, please use @Zezulinski25.
+
+
 Package **`minPanel`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
@@ -77,11 +80,11 @@ theme_minimal() |>
 
 # `panel`
 
-Data object *`m1`* in package **`minPanel`** .. Early & Late Stage
+Data object *`m1`* in package **`minPanel`** is a `logical` `matrix` of `r nrow(m1)` variants in `r ncol(m1)` early & late stage, i.e., *positive*, patients.
 
-Data object *`m0`* in package **`minPanel`** .. UPC ..
+Data object *`m0`* in package **`minPanel`** is a `logical` `matrix` of the same `r nrow(m0)` variants in `r ncol(m0)` UPC, i.e., *negative*, patients.
 
-Function `panel()` identifies the variants .. same subjects and put them in collections.
+Function `panel()` identifies the variants that identifies the same set of subjects in both *`m1`* and *`m0`*.  These variants are considered identical in terms of *`m1`* and *`m0`*.  Therefore they are put in one **collection**.
 
 ```{r}
 m = panel(m1 = m1, m0 = m0)
@@ -89,15 +92,24 @@ m = panel(m1 = m1, m0 = m0)
 
 Function `panel()` returns an object of `S4` class `'panel'`, with `slot`s
 
--   `@m1`, a `logical` `matrix`
--   `@m0`, a `logical` `matrix`
--   `@id`
+-   `@m1`, a `logical` `matrix`, collections on rows and positive subjects on columns
+-   `@m0`, a `logical` `matrix`, collections on rows and negative subjects on columns
+-   `@id`, a `list` of `character` `vector`s.  Each `character` `vector` contains the variants in a collection. 
 -   `@label`, an optional `character` scalar
 
-The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of variants, and the number of positive and negative subjects.
+The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of variant-collections, and the number of positive and negative subjects.
 
 ```{r}
 m
+```
+
+In other words, the `r nrow(m1)` variants in both *`m1`* and *`m0`* are consolidated into `r length(m@id)` collections.  For example, the variants below identify the same set of positive and negative subjects, thus they are consolidated as one collection.
+
+```{r}
+#| code-fold: true
+#| code-summary: e.g., variants consolidated in one collection
+m@id[[8L]] |>
+  cat(sep = '\n')
 ```
 
 
@@ -114,16 +126,16 @@ x0 = m |>
 
 The pipeline above consists of four steps.
 
-First, the S3 method dispatch `subset.panel()` ..
+First, the `S3` method dispatch `subset.panel()` (Appendix @sec-true-positive, @sec-subset) selects the variant-collections that identify at least one positive subjects.  
 
-Second, the S3 method dispatch `subset.panel()` ..
+Second, the `S3` method dispatch `subset.panel()` (Appendix @sec-false-positive, @sec-subset) selects the variant-collections that identify none of the negative subjects.
 
-Third, the S3 method dispatch `sort_by.panel()` ..
+Third, the `S3` method dispatch `sort_by.panel()` (Appendix @sec-true-positive, @sec-sortby) sorts the variant-collections by their number of true positives.
 
-Lastly, the S3 method dispatch `subset.panel()` ..
+Lastly, the `S3` method dispatch `subset.panel()` (Appendix @sec-cum-true-positive, @sec-subset) identifies a subset of variant-collections, that each one variant-collection identifies at least one more positive subjects than all the preceding variant-collections.
 
 
-The S3 method dispatch `names<-.panel()` ..
+The S3 method dispatch `names<-.panel()` (Appendix @sec-names-set) assigns the `@label` of a panel based on a criterion.
 
 ```{r}
 names(x0) = 'false_positive'
@@ -179,7 +191,7 @@ x3
 
 # Multiple Minimum `panel`s
 
-Function `panellist()` ..
+Function `panellist()` collects multiple `panel`s.
 
 ```{r}
 z = panellist(x0, x1, x2, x3)
@@ -194,7 +206,7 @@ z
 ```
 
 
-The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` ..
+The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics.
 
 ```{r}
 #| fig-height: 3
@@ -203,7 +215,7 @@ z |>
   autoplot()
 ```
 
-The `S3` method dispatch `as_flextable.panellist()` ..
+The `S3` method dispatch `as_flextable.panellist()` displays the variant-collections selected in each `panel`.  The collections that contain more than one variants are highlighted using the [light-yellow]{style="background-color: lightyellow"} color.
 
 ```{r}
 z |> 
@@ -213,11 +225,19 @@ z |>
 
 # Appendix
 
-## `true_positive()`
+## True & False Positives
 
-## `false_positive()`
+### `true_positive()` {#sec-true-positive}
 
-## `cum_true_positive()`
+### `false_positive()` {#sec-false-positive}
+
+### `cum_true_positive()` {#sec-cum-true-positive}
+
+## `subset.panel()` {#sec-subset}  
+
+## `sort_by.panel()` {#sec-sortby}
+
+## `names<-.panel()` {#sec-names-set}
 
 # What We Don't Do
 
