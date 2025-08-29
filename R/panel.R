@@ -1,0 +1,200 @@
+
+
+#' @title \linkS4class{panel}
+#' 
+#' @slot m1 \link[base]{logical} \link[base]{matrix}, true positives,
+#' i.e., variants tested positive in positive subjects (patients)
+#' Rows are different variants.  Columns are different subjects.
+#' 
+#' @slot m0 \link[base]{logical} \link[base]{matrix}, false positives,
+#' i.e., variants tested positive in negative subjects (patients)
+#' Rows are different variants.  Columns are different subjects.
+#' Order of variants in `m0` and `m1` must be the same
+#' 
+#' @slot id \link[base]{list} of \link[base]{character} \link[base]{vector}s
+#' 
+#' @slot label \link[base]{character} scalar
+#' 
+#' @param m1,m0 see **Slots**
+#' 
+#' @keywords internal
+#' @name panel
+#' @aliases panel-class
+#' @export
+setClass(Class = 'panel', slots = c(
+  m1 = 'matrix',
+  m0 = 'matrix',
+  id = 'list',
+  label = 'character'
+))
+
+
+#' @rdname panel
+#' @export
+panel <- function(m1, m0) {
+  
+  if (!is.matrix(m1) || !is.logical(m1)) stop('Variants tested positive in positive subjects `m1` must be logical-matrix') 
+  if (!is.matrix(m0) || !is.logical(m0)) stop('Variants tested positive in negative subjects `m0` must be logical-matrix') 
+  nr <- nrow(m1)
+  if (nr != nrow(m0)) stop('`m0` and `m1` must have same number of rows')
+  r <- rownames(m1)
+  if (!identical(r, rownames(m0))) stop('`m0` and `m1` must have identical row-names')
+  
+  sr <- \(x) split.default(x, f = row(x)) # split-by-row
+  match_id <- \(x, table) {
+    id <- match(x = x, table = table)
+    split.default(x = seq_along(id), f = id)
+  }
+  
+  m <- cbind(m1, m0) # `m` could be huge
+  
+  uid <- !duplicated.matrix(m)
+  
+  id <- m[uid, , drop = FALSE] |>
+    sr() |>
+    match_id(x = sr(m), table = _) |>
+    lapply(FUN = \(i) r[i])
+  names(id) <- id |> 
+    seq_along() |>
+    format(justify = 'right') |>
+    sprintf(fmt = 'Collection %s')
+  
+  m1o <- m1[uid, , drop = FALSE]
+  m0o <- m0[uid, , drop = FALSE]
+  rownames(m1o) <- rownames(m0o) <- names(id)
+  
+  new(
+    Class = 'panel',
+    m1 = m1o,
+    m0 = m0o,
+    id = id
+  )
+  
+}
+
+
+#' @title Show \linkS4class{panel}
+#' 
+#' @param object a \linkS4class{panel}
+#' 
+#' @export
+setMethod(f = show, signature = 'panel', definition = \(object) {
+  
+  if (length(object@label)) {
+    object@label |>
+      col_red() |>
+      style_bold() |>
+      cat(sep = '\n')
+  }
+  
+  sprintf(
+    fmt = 'Panel of %s Variant-Collections from\n',
+    object@m1 |> nrow() |> col_magenta()
+  ) |> cat()
+  sprintf(
+    fmt = '%s %s subjects\n',
+    object@m1 |> ncol() |> col_blue(),
+    'positive' |> col_br_magenta()
+  ) |> cat()
+  sprintf(
+    fmt = '%s %s subjects\n',
+    object@m0 |> ncol() |> col_blue(),
+    'negative' |> col_green()
+  ) |> cat()
+  
+})
+
+
+
+#' @title Set `@label` for \linkS4class{panel}
+#' 
+#' @param x a \linkS4class{panel}
+#' 
+#' @param value \link[base]{character} scalar
+#' 
+#' @note
+#' There is no generic function `labels<-` in package \pkg{base} !!!
+#' 
+#' Function \link[base]{comment<-} is not an S3 generic.
+#' 
+#' @export names<-.panel
+#' @export
+`names<-.panel` <- function(x, value) {
+  
+  x@label <- value |>
+    switch(EXPR = _, false_positive = {
+      sprintf(
+        fmt = 'False(+) \u2264%d/%d', 
+        x |> false_positive() |> max(),
+        x@m0 |> ncol()
+      )
+    })
+  
+  return(x)
+  
+}
+
+
+#' @title as_flextable.panel
+#' 
+#' @param x a \linkS4class{panel}
+#' 
+#' @param ... additional parameters, currently of no use
+#' 
+#' @keywords internal
+#' @importFrom flextable as_flextable flextable autofit hline
+#' @export as_flextable.panel
+#' @export
+as_flextable.panel <- function(x, ...) {
+  data.frame(
+    Collection = names(x@id),
+    Variants = x@id |> 
+      vapply(FUN = paste, collapse = ' \u2756 ', FUN.VALUE = '') 
+  ) |>
+    flextable() |>
+    autofit(part = 'all') |>
+    hline()
+}
+
+
+
+#' @title R Markdown Lines for \linkS4class{panel}
+#' 
+#' @param x a \linkS4class{panel}
+#' 
+#' @param xnm ..
+#' 
+#' @param ... ..
+#' 
+#' @keywords internal
+#' @importFrom rmd.tzh md_
+#' @importClassesFrom rmd.tzh md_lines
+#' @importFrom methods new
+#' @export md_.panel
+#' @export
+md_.panel <- function(x, xnm, ...) {
+  
+  z1 <- sprintf(
+    fmt = 'Duplicated variants, i.e., those identify the same set of `positive` and `negative` patients, are grouped in [%d]{style="background-color: yellow"} `Collection`s.', 
+    length(x@id)
+  ) |> 
+    new(Class = 'md_lines')
+  
+  z2 <- c(
+    '<details>',
+    '```{r}',
+    '#| echo: false',
+    xnm |> sprintf(fmt = 'as_flextable.panel(%s)'),
+    '```',
+    '</details>'
+  ) |>
+    new(Class = 'md_lines')
+  
+  c(z1, z2) # ?rmd.tzh::c.md_lines
+  
+}
+
+
+
+
+

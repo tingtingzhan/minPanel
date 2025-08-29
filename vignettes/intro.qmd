@@ -1,0 +1,235 @@
+---
+title: "minPanel"
+author: Tingting Zhan
+date: "`r Sys.Date()`"
+format: 
+  html:
+    page-layout: full
+    html-math-method: katex
+number-sections: true
+toc: true
+toc-location: left
+toc-depth: 4
+toc-title: ''
+editor: source
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#" 
+bibliography: minPanel.bib
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+This vignette of package **`minPanel`** ([Github](https://github.com/tingtingzhan/minPanel)) presents ...
+
+Package **`minPanel`** `Imports` packages
+
+-   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
+-   `r '\U1f5dd'` **`flextable`** [@flextable, v`r packageVersion('flextable')`] and **`officer`** [@officer, v`r packageVersion('officer')`], key dependencies, for flexible table
+-   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
+
+
+## Prerequisite
+
+Packages **`minPanel`** requires R version 4.5.0 (released 2025-04-11) or higher ([macOS](https://cran.r-project.org/bin/macosx/), [Windows](https://cran.r-project.org/bin/windows/base/)). An Integrated Development Environment (IDE), e.g., [RStudio](https://posit.co/download/rstudio-desktop/) or [Positron](https://positron.posit.co/download.html), is not required, but highly recommended. This vignette is created under `r R.version$version.string` using packages **`knitr`** [@knitr, v`r packageVersion('knitr')`], **`quarto`** [@quarto, v`r packageVersion('quarto')` with [Quarto](https://quarto.org/docs/get-started/) v`r quarto::quarto_version()`] and **`rmarkdown`** [@rmarkdown, v`r packageVersion('rmarkdown')`].
+
+```{r}
+#| code-fold: true
+#| code-summary: "Environment on author's computer"
+Sys.info()[c('sysname', 'release', 'machine')]
+R.version
+```
+
+Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/minPanel). Stable releases to [CRAN](https://CRAN.R-project.org/package=minPanel) are typically updated every 2 to 3 months.
+
+```{r}
+#| eval: false
+remotes::install_github('tingtingzhan/minPanel')
+```
+
+```{r}
+#| eval: false
+utils::install.packages('minPanel')
+```
+
+## Getting Started
+
+Examples in this vignette require that the `search` path has
+
+```{r}
+library(minPanel)
+library(ggplot2)
+library(flextable)
+```
+
+
+```{r}
+#| echo: false
+theme_minimal() |> 
+  theme_set()
+```
+
+
+# `panel`
+
+Data object *`m1`* in package **`minPanel`** .. Early & Late Stage
+
+Data object *`m0`* in package **`minPanel`** .. UPC ..
+
+Function `panel()` identifies the variants .. same subjects and put them in collections.
+
+```{r}
+m = panel(m1 = m1, m0 = m0)
+```
+
+Function `panel()` returns an object of `S4` class `'panel'`, with `slot`s
+
+-   `@m1`, a `logical` `matrix`
+-   `@m0`, a `logical` `matrix`
+-   `@id`
+-   `@label`, an optional `character` scalar
+
+The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of variants, and the number of positive and negative subjects.
+
+```{r}
+m
+```
+
+
+# Minimum `panel`
+
+```{r}
+x0 = m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 0L) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L)
+```
+
+
+The pipeline above consists of four steps.
+
+First, the S3 method dispatch `subset.panel()` ..
+
+Second, the S3 method dispatch `subset.panel()` ..
+
+Third, the S3 method dispatch `sort_by.panel()` ..
+
+Lastly, the S3 method dispatch `subset.panel()` ..
+
+
+The S3 method dispatch `names<-.panel()` ..
+
+```{r}
+names(x0) = 'false_positive'
+```
+
+
+```{r}
+x0
+```
+
+
+Similarly, we create
+
+```{r}
+#| code-fold: true
+#| code-summary: 'A `panel` *`x1`*: controlled at `false_positive <= 1L`'
+x1 = m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 1L) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L)
+names(x1) = 'false_positive'
+x1
+```
+
+
+```{r}
+#| code-fold: true
+#| code-summary: 'A `panel` *`x2`*: controlled at `false_positive <= 2L`'
+x2 = m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 2L) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L)
+names(x2) = 'false_positive'
+x2
+```
+
+
+```{r}
+#| code-fold: true
+#| code-summary: 'A `panel` *`x3`*: controlled at `false_positive <= 3L`'
+x3 = m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 3L) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L)
+names(x3) = 'false_positive'
+x3
+```
+
+
+
+# Multiple Minimum `panel`s
+
+Function `panellist()` ..
+
+```{r}
+z = panellist(x0, x1, x2, x3)
+```
+
+The `S3` method dispatch `base::print.listof()` displays a `panellist`.
+
+```{r}
+#| code-fold: true
+#| code-summary: 'A `panellist` *`z`*'
+z
+```
+
+
+The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` ..
+
+```{r}
+#| fig-height: 3
+#| fig-width: 6
+z |> 
+  autoplot()
+```
+
+The `S3` method dispatch `as_flextable.panellist()` ..
+
+```{r}
+z |> 
+  as_flextable()
+```
+
+
+# Appendix
+
+## `true_positive()`
+
+## `false_positive()`
+
+## `cum_true_positive()`
+
+# What We Don't Do
+
+too difficult to parse..
+
+```{r}
+#| eval: false
+m |> 
+  subset.panel(subset = (true_positive > 0L) & (false_positive <= 3L))
+```
+
+# References
+
+::: {#refs}
+:::
