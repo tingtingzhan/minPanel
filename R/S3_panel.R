@@ -85,10 +85,12 @@ subset.panel <- function(x, subset, append.label = FALSE, ...) {
         #sprintf(fmt = 'cumFalse\u2795 %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
       })
     
-    if (length(ret@label)) {
-      ret@label <- paste(ret@label, newlabel, sep = '\n')
-    } else ret@label <- newlabel
-      
+    #if (length(ret@label)) {
+    #  ret@label <- paste(ret@label, newlabel, sep = '\n')
+    #} else ret@label <- newlabel
+    ret@label <- c(ret@label, newlabel) |>
+      paste(collapse = '\n')
+
   }
   
   return(ret)

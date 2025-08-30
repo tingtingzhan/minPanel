@@ -25,10 +25,9 @@ append_label <- function(x, by) {
       )
     })
   
-  if (length(x@label)) {
-    x@label <- paste(x@label, newlabel, sep = '\n')
-  } else x@label <- newlabel
-  
+  x@label <- c(x@label, newlabel) |>
+    paste(collapse = '\n')
+
   return(x)
   
 }
