@@ -47,14 +47,29 @@ false_positive <- function(x) {
     sum()
 }
 
-#' @rdname true_positive
-#' @export
-cum_true_positive <- function(x) {
-  x@m1 |>
+
+.cum_positive <- function(x) {
+  # `x` is a \link[base]{logical} \link[base]{matrix}
+  x |>
     nrow() |>
     seq_len() |> 
     vapply(FUN = \(i) {
-      x@m1[seq_len(i), , drop = FALSE] |>
+      x[seq_len(i), , drop = FALSE] |>
         .total_positive()
     }, FUN.VALUE = NA_integer_)
 }
+
+#' @rdname true_positive
+#' @export
+cum_true_positive <- function(x) {
+  x@m1 |> 
+    .cum_positive()
+}
+
+#' @rdname true_positive
+#' @export
+cum_false_positive <- function(x) {
+  x@m0 |>
+    .cum_positive()
+}
+

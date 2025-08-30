@@ -21,7 +21,8 @@
     Class = 'panel',
     m1 = x@m1[i, , drop = FALSE],
     m0 = x@m0[i, , drop = FALSE],
-    id = x@id[i]
+    id = x@id[i],
+    label = x@label
   )
 }
 
@@ -37,12 +38,15 @@
 #' 
 #' @param subset a \link[base]{language} object
 #' 
+#' @param append.label \link[base]{logical} scalar, whether to 
+#' append the criterion `subset` to `x@label`, default `FALSE`
+#' 
 #' @param ... additional parameters, currently not in use
 #' 
 #' @keywords internal
 #' @export subset.panel
 #' @export
-subset.panel <- function(x, subset, ...) {
+subset.panel <- function(x, subset, append.label = FALSE, ...) {
   
   e <- substitute(subset)
   e. <- e
@@ -55,12 +59,39 @@ subset.panel <- function(x, subset, ...) {
     }, false_positive = {
       e.[[2L]] <- call(name = 'false_positive', quote(x))
       id <- eval(e.)
+    }, cum_false_positive = {
+      e.[[2L]] <- call(name = 'cum_false_positive', quote(x))
+      id <- eval(e.)
     }, 'diff(cum_true_positive)' = {
       e.[[2L]] <- call(name = 'diff', call(name = 'cum_true_positive', quote(x))) # cannot use native pipe!
       id <- c(1L, which(eval(e.)) + 1L)
     })
 
-  x[id, ] # `[.panel`
+  ret <- x[id, ] # `[.panel`
+  
+  if (append.label) {
+    
+    sign_rel <- e[[1L]] |> 
+      deparse1() |> 
+      switch(EXPR = _, '<=' = '\u2264', '>=' = '\u2265', '<' = '<', '>' = '>')
+    
+    newlabel <- e[[2L]] |>
+      deparse1() |>
+      switch(EXPR = _, false_positive = {
+        sprintf(fmt = 'False(+) %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
+        #sprintf(fmt = 'False\u2795 %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
+      }, cum_false_positive = {
+        sprintf(fmt = 'cumFalse(+) %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
+        #sprintf(fmt = 'cumFalse\u2795 %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
+      })
+    
+    if (length(ret@label)) {
+      ret@label <- paste(ret@label, newlabel, sep = '\n')
+    } else ret@label <- newlabel
+      
+  }
+  
+  return(ret)
   
 }
 

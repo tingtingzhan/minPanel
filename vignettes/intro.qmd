@@ -84,7 +84,7 @@ Data object *`m1`* in package **`minPanel`** is a `logical` `matrix` of `r nrow(
 
 Data object *`m0`* in package **`minPanel`** is a `logical` `matrix` of the same `r nrow(m0)` variants in `r ncol(m0)` UPC, i.e., *negative*, patients.
 
-Function `panel()` identifies the variants that identifies the same set of subjects in both *`m1`* and *`m0`*.  These variants are considered identical in terms of *`m1`* and *`m0`*.  Therefore they are put in one **collection**.
+Function `panel()` identifies the variants that identifies the same set of subjects in both *`m1`* and *`m0`*.  These variants are considered identical in terms of *`m1`* and *`m0`*.  Therefore they are put in one **variant-collection**.  We use *"collection"* for short in this vignette.
 
 ```{r}
 m = panel(m1 = m1, m0 = m0)
@@ -97,7 +97,7 @@ Function `panel()` returns an object of `S4` class `'panel'`, with `slot`s
 -   `@id`, a `list` of `character` `vector`s.  Each `character` `vector` contains the variants in a collection. 
 -   `@label`, an optional `character` scalar
 
-The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of variant-collections, and the number of positive and negative subjects.
+The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of collections, and the number of positive and negative subjects.
 
 ```{r}
 m
@@ -118,28 +118,20 @@ m@id[[8L]] |>
 ```{r}
 x0 = m |>
   subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 0L) |>
+  subset(subset = false_positive <= 0L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
-  subset(subset = diff(cum_true_positive) > 0L)
+  subset(subset = diff(cum_true_positive) > 0L) |>
+  append_label(by = 'cum_false_positive')
 ```
 
 
-The pipeline above consists of four steps.
+The pipeline above consists of five steps.
 
-First, the `S3` method dispatch `subset.panel()` (Appendix @sec-true-positive, @sec-subset) selects the variant-collections that identify at least one positive subjects.  
-
-Second, the `S3` method dispatch `subset.panel()` (Appendix @sec-false-positive, @sec-subset) selects the variant-collections that identify none of the negative subjects.
-
-Third, the `S3` method dispatch `sort_by.panel()` (Appendix @sec-true-positive, @sec-sortby) sorts the variant-collections by their number of true positives.
-
-Lastly, the `S3` method dispatch `subset.panel()` (Appendix @sec-cum-true-positive, @sec-subset) identifies a subset of variant-collections, that each one variant-collection identifies at least one more positive subjects than all the preceding variant-collections.
-
-
-The S3 method dispatch `names<-.panel()` (Appendix @sec-names-set) assigns the `@label` of a panel based on a criterion.
-
-```{r}
-names(x0) = 'false_positive'
-```
+1. The `S3` method dispatch `subset.panel()` (Appendix @sec-positive, @sec-subset) selects the collections that identify at least one positive subjects *per collection*.  
+2. The `S3` method dispatch `subset.panel()` (Appendix @sec-positive, @sec-subset) selects the collections that identify none of the negative subjects *per collection*.  The criterion *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
+3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-positive, @sec-sortby) sorts the collections by their number of true positives.
+4. The `S3` method dispatch `subset.panel()` (Appendix @sec-cum-positive, @sec-subset) identifies the collections, so that each one collection identifies at least one more positive subjects than all the preceding collections.
+5. Function `append_label()` (Appendix @sec-cum-positive, @sec-appendlabel) summarizes the number of negative subjects identified *as a panel of collections*.  The criterion *`'cumFalse(+) ≤0/31'`* is `append`ed to the `@label` of the output
 
 
 ```{r}
@@ -154,10 +146,14 @@ Similarly, we create
 #| code-summary: 'A `panel` *`x1`*: controlled at `false_positive <= 1L`'
 x1 = m |>
   subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 1L) |>
+  subset(subset = false_positive <= 1L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
-  subset(subset = diff(cum_true_positive) > 0L)
-names(x1) = 'false_positive'
+  subset(subset = diff(cum_true_positive) > 0L) |>
+  append_label(by = 'cum_false_positive')
+```
+
+
+```{r}
 x1
 ```
 
@@ -167,10 +163,14 @@ x1
 #| code-summary: 'A `panel` *`x2`*: controlled at `false_positive <= 2L`'
 x2 = m |>
   subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 2L) |>
+  subset(subset = false_positive <= 2L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
-  subset(subset = diff(cum_true_positive) > 0L)
-names(x2) = 'false_positive'
+  subset(subset = diff(cum_true_positive) > 0L) |>
+  append_label(by = 'cum_false_positive')
+```
+
+
+```{r}
 x2
 ```
 
@@ -180,13 +180,16 @@ x2
 #| code-summary: 'A `panel` *`x3`*: controlled at `false_positive <= 3L`'
 x3 = m |>
   subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 3L) |>
+  subset(subset = false_positive <= 3L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
-  subset(subset = diff(cum_true_positive) > 0L)
-names(x3) = 'false_positive'
-x3
+  subset(subset = diff(cum_true_positive) > 0L) |>
+  append_label(by = 'cum_false_positive')
 ```
 
+
+```{r}
+x3
+```
 
 
 # Multiple Minimum `panel`s
@@ -212,10 +215,11 @@ The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` vi
 #| fig-height: 3
 #| fig-width: 6
 z |> 
-  autoplot()
+  autoplot() + 
+  theme(legend.key.spacing.y = unit(.03, "npc"))
 ```
 
-The `S3` method dispatch `as_flextable.panellist()` displays the variant-collections selected in each `panel`.  The collections that contain more than one variants are highlighted using the [light-yellow]{style="background-color: lightyellow"} color.
+The `S3` method dispatch `as_flextable.panellist()` displays the collections selected in each `panel`.  The collections that contain more than one variants are highlighted using the [light-yellow]{style="background-color: lightyellow"} color.
 
 ```{r}
 z |> 
@@ -225,21 +229,25 @@ z |>
 
 # Appendix
 
-## True & False Positives
+## True & False Positives {#sec-positive}
 
-### `true_positive()` {#sec-true-positive}
+Funtions `true_positive()` and `false_positive()` ..
 
-### `false_positive()` {#sec-false-positive}
+## Cumulative True & False Positives {#sec-cum-positive}
 
-### `cum_true_positive()` {#sec-cum-true-positive}
+Function `cum_true_positive()` and `cum_false_positive()` .. 
 
 ## `subset.panel()` {#sec-subset}  
 
 ## `sort_by.panel()` {#sec-sortby}
 
-## `names<-.panel()` {#sec-names-set}
+## `append_label()` {#sec-appendlabel}
 
 # What We Don't Do
+
+## For `subset.panel()`
+
+## by Multiple Criteria
 
 too difficult to parse..
 
@@ -248,6 +256,20 @@ too difficult to parse..
 m |> 
   subset.panel(subset = (true_positive > 0L) & (false_positive <= 3L))
 ```
+
+## by Cumulative False Positives
+
+left with too small panel
+
+```{r}
+m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 1L) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = cum_false_positive <= 1L, append.label = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L)
+```
+
 
 # References
 

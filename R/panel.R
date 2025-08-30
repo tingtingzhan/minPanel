@@ -106,33 +106,6 @@ setMethod(f = show, signature = 'panel', definition = \(object) {
 
 
 
-#' @title Set `@label` for \linkS4class{panel}
-#' 
-#' @param x a \linkS4class{panel}
-#' 
-#' @param value \link[base]{character} scalar
-#' 
-#' @note
-#' There is no generic function `labels<-` in package \pkg{base} !!!
-#' 
-#' Function \link[base]{comment<-} is not an S3 generic.
-#' 
-#' @export names<-.panel
-#' @export
-`names<-.panel` <- function(x, value) {
-  
-  x@label <- value |>
-    switch(EXPR = _, false_positive = {
-      sprintf(
-        fmt = 'False(+) \u2264%d/%d', 
-        x |> false_positive() |> max(),
-        x@m0 |> ncol()
-      )
-    })
-  
-  return(x)
-  
-}
 
 
 #' @title as_flextable.panel

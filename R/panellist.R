@@ -61,7 +61,7 @@ autolayer.panellist <- function(object, ...) {
     vapply(FUN = \(i) {
       inm <- i@label
       if (length(inm)) return(inm)
-      i@m1 |> nrow() |> as.character() #sprintf(fmt = '%d Variant-Collections')
+      i@m1 |> nrow() |> as.character()
     }, FUN.VALUE = '')
   
   mp <- aes(x = .x, y = .y, color = .group)
@@ -141,8 +141,10 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
   
   d <- data.frame(
     'Variant-Collection' = v |> names(),
-    'True (+)' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
-    'False (+)' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
+    'True(+)' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
+    'False(+)' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
+    # 'True\u2795' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
+    # 'False\u2795' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
     'Variants in Collection' = v |>
       vapply(FUN = paste, collapse = '\n', FUN.VALUE = NA_character_),
     check.names = FALSE

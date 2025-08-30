@@ -4,6 +4,7 @@
 \alias{true_positive}
 \alias{false_positive}
 \alias{cum_true_positive}
+\alias{cum_false_positive}
 \title{Number of True & False Positives, per variant}
 \usage{
 true_positive(x)
@@ -11,6 +12,8 @@ true_positive(x)
 false_positive(x)
 
 cum_true_positive(x)
+
+cum_false_positive(x)
 }
 \arguments{
 \item{x}{a \linkS4class{panel}}
