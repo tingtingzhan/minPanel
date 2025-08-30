@@ -215,7 +215,7 @@ The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` vi
 #| fig-height: 3
 #| fig-width: 6
 #| fig-align: left
-#| fig-cap: 'Operating characteristics of `panellist` *`z`*'
+#| fig-cap: 'Operating Characteristics of `panellist` *`z`*'
 #| label: fig-panellist
 z |> 
   autoplot() + 

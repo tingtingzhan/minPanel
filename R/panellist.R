@@ -69,10 +69,10 @@ autolayer.panellist <- function(object, ...) {
   list(
     geom_point(mapping = mp),
     geom_path(mapping = mp, linewidth = .3),
-    scale_y_continuous(name = 'Number of True Positives', labels = label_percent(), limits = c(0, 1)),
+    scale_y_continuous(name = 'True Positives Identified', labels = label_percent(), limits = c(0, 1)),
     scale_color_discrete(name = 'Total Number of\nVariant-Collections\nper Panel', labels = .label),
     labs(
-      x = 'Number of Variants per Panel'
+      x = 'Number of Collections per Panel'
     )
   )
   
