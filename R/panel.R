@@ -108,66 +108,6 @@ setMethod(f = show, signature = 'panel', definition = \(object) {
 
 
 
-#' @title as_flextable.panel
-#' 
-#' @param x a \linkS4class{panel}
-#' 
-#' @param ... additional parameters, currently of no use
-#' 
-#' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit hline
-#' @export as_flextable.panel
-#' @export
-as_flextable.panel <- function(x, ...) {
-  data.frame(
-    Collection = names(x@id),
-    Variants = x@id |> 
-      vapply(FUN = paste, collapse = ' \u2756 ', FUN.VALUE = '') 
-  ) |>
-    flextable() |>
-    autofit(part = 'all') |>
-    hline()
-}
-
-
-
-#' @title R Markdown Lines for \linkS4class{panel}
-#' 
-#' @param x a \linkS4class{panel}
-#' 
-#' @param xnm ..
-#' 
-#' @param ... ..
-#' 
-#' @keywords internal
-#' @importFrom rmd.tzh md_
-#' @importClassesFrom rmd.tzh md_lines
-#' @importFrom methods new
-#' @export md_.panel
-#' @export
-md_.panel <- function(x, xnm, ...) {
-  
-  z1 <- sprintf(
-    fmt = 'Duplicated variants, i.e., those identify the same set of `positive` and `negative` patients, are grouped in [%d]{style="background-color: yellow"} `Collection`s.', 
-    length(x@id)
-  ) |> 
-    new(Class = 'md_lines')
-  
-  z2 <- c(
-    '<details>',
-    '```{r}',
-    '#| echo: false',
-    xnm |> sprintf(fmt = 'as_flextable.panel(%s)'),
-    '```',
-    '</details>'
-  ) |>
-    new(Class = 'md_lines')
-  
-  c(z1, z2) # ?rmd.tzh::c.md_lines
-  
-}
-
-
 
 
 

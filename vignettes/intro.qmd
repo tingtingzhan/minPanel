@@ -33,7 +33,10 @@ To cite this methodology, please use @Zezulinski25.
 Package **`minPanel`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
--   `r '\U1f5dd'` **`flextable`** [@flextable, v`r packageVersion('flextable')`] and **`officer`** [@officer, v`r packageVersion('officer')`], key dependencies, for flexible table
+-   **`flextable`** [@flextable, v`r packageVersion('flextable')`], for flexible table
+-   **`ggplot2`** [@ggplot2], for visualization
+-   `r '\U1f5dd'` **`matrixStats`** [@matrixStats, v`r packageVersion('matrixStats')`], key dependency, for matrix algebra
+-   `r '\U1f5dd'` **`methods`** shipped with vanilla `r R.version.string`, key dependencies, for `S4` generic function and method dispatches
 -   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
 
 
@@ -48,15 +51,17 @@ Sys.info()[c('sysname', 'release', 'machine')]
 R.version
 ```
 
-Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/minPanel). Stable releases to [CRAN](https://CRAN.R-project.org/package=minPanel) are typically updated every 2 to 3 months.
+Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/minPanel). <!--Stable releases to [CRAN](https://CRAN.R-project.org/package=minPanel) are typically updated every 2 to 3 months.-->
 
 ```{r}
 #| eval: false
 remotes::install_github('tingtingzhan/minPanel')
 ```
 
+
 ```{r}
 #| eval: false
+#| echo: false
 utils::install.packages('minPanel')
 ```
 
@@ -77,12 +82,33 @@ theme_minimal() |>
   theme_set()
 ```
 
-
-# `panel`
+# Data Set
 
 Data object *`m1`* in package **`minPanel`** is a `logical` `matrix` of `r nrow(m1)` variants in `r ncol(m1)` early & late stage, i.e., *positive*, patients.
 
+```{r}
+m1 |> 
+  dim()
+```
+
+```{r}
+m1 |> 
+  head(n = c(3L, 3L))
+```
+
 Data object *`m0`* in package **`minPanel`** is a `logical` `matrix` of the same `r nrow(m0)` variants in `r ncol(m0)` UPC, i.e., *negative*, patients.
+
+```{r}
+m0 |> 
+  dim()
+```
+
+```{r}
+m0 |> 
+  head(n = c(3L, 3L))
+```
+
+# `panel`
 
 Function `panel()` identifies the variants that identifies the same set of subjects in both *`m1`* and *`m0`*.  These variants are considered identical in terms of *`m1`* and *`m0`*.  Therefore they are put in one **variant-collection**.  We use *"collection"* for short in this vignette.
 
