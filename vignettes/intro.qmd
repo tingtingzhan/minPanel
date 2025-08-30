@@ -113,7 +113,7 @@ m@id[[8L]] |>
 ```
 
 
-# Minimum `panel`
+# Selected `panel`
 
 ```{r}
 x0 = m |>
@@ -121,7 +121,7 @@ x0 = m |>
   subset(subset = false_positive <= 0L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
-  append_label(by = 'cum_false_positive')
+  append_label(info = 'cum_false_positive')
 ```
 
 
@@ -149,7 +149,7 @@ x1 = m |>
   subset(subset = false_positive <= 1L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
-  append_label(by = 'cum_false_positive')
+  append_label(info = 'cum_false_positive')
 ```
 
 
@@ -166,7 +166,7 @@ x2 = m |>
   subset(subset = false_positive <= 2L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
-  append_label(by = 'cum_false_positive')
+  append_label(info = 'cum_false_positive')
 ```
 
 
@@ -183,7 +183,7 @@ x3 = m |>
   subset(subset = false_positive <= 3L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
-  append_label(by = 'cum_false_positive')
+  append_label(info = 'cum_false_positive')
 ```
 
 
@@ -192,7 +192,7 @@ x3
 ```
 
 
-# Multiple Minimum `panel`s
+# Multiple Selected `panel`s
 
 Function `panellist()` collects multiple `panel`s.
 
@@ -209,11 +209,14 @@ z
 ```
 
 
-The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics.
+The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics in @fig-panellist.
 
 ```{r}
 #| fig-height: 3
 #| fig-width: 6
+#| fig-align: left
+#| fig-cap: 'Operating characteristics of `panellist` *`z`*'
+#| label: fig-panellist
 z |> 
   autoplot() + 
   theme(legend.key.spacing.y = unit(.03, "npc"))

@@ -4,12 +4,12 @@
 \alias{append_label}
 \title{Append to \verb{@label} of \linkS4class{panel}}
 \usage{
-append_label(x, by)
+append_label(x, info)
 }
 \arguments{
 \item{x}{a \linkS4class{panel}}
 
-\item{by}{\link[base]{character} scalar}
+\item{info}{\link[base]{character} scalar}
 }
 \description{
 Append to \verb{@label} of \linkS4class{panel}
