@@ -373,7 +373,7 @@ z |>
 | [`|>`](https://search.r-project.org/R/refmans/base/html/pipeOp.html) | Forward pipe operator introduced since R version 4.1.0 |
 | [`append`](https://search.r-project.org/R/refmans/base/html/append.html) | Append to an R object |
 | [`autoplot`](https://search.r-project.org/CRAN/refmans/ggplot2/html/autoplot.html), [`autolayer`](https://search.r-project.org/CRAN/refmans/ggplot2/html/autolayer.html) | Create a Grammar of Graphics (layer), from package **`ggplot2`** [@ggplot2] |
-| [`consort_plot`](https://search.r-project.org/CRAN/refmans/consort/html/consort_plot.html) | Consolidated Standards of Reporting Trials (CONSORT) diagram, from package **`consort`** [@consort] |
+| [`consort_plot`](https://search.r-project.org/CRAN/refmans/consort/html/consort_plot.html) | Consolidated Standards of Reporting Trials ([CONSORT](https://en.wikipedia.org/wiki/Consolidated_Standards_of_Reporting_Trials)) diagram, from package **`consort`** [@consort] |
 | [`flextable`](https://search.r-project.org/CRAN/refmans/flextable/html/flextable.html), [`as_flextable`](https://search.r-project.org/CRAN/refmans/flextable/html/as_flextable.html) | (Transform an R object into) flexible table, from package **`flextable`** [@flextable] |
 | [`logical`](https://search.r-project.org/R/refmans/base/html/logical.html) | Logical variable |
 | [`matrix`](https://search.r-project.org/R/refmans/base/html/matrix.html) | Matrix |
