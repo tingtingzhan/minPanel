@@ -33,11 +33,12 @@ To cite this methodology, please use @Zezulinski25.
 Package **`minPanel`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
+-   **`consort`** [@consort, v`r packageVersion('consort')`], for Consolidated Standards of Reporting Trials (CONSORT) diagram
 -   **`flextable`** [@flextable, v`r packageVersion('flextable')`], for flexible table
 -   **`ggplot2`** [@ggplot2], for visualization
 -   `r '\U1f5dd'` **`matrixStats`** [@matrixStats, v`r packageVersion('matrixStats')`], key dependency, for matrix algebra
 -   `r '\U1f5dd'` **`methods`** shipped with vanilla `r R.version.string`, key dependencies, for `S4` generic function and method dispatches
--   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
+-   **`scales`** [@scales, v`r packageVersion('scales')`], for colour palette
 
 
 ## Prerequisite
@@ -122,6 +123,7 @@ Function `panel()` returns an object of `S4` class `'panel'`, with `slot`s
 -   `@m0`, a `logical` `matrix`, collections on rows and negative subjects on columns
 -   `@id`, a `list` of `character` `vector`s.  Each `character` `vector` contains the variants in a collection. 
 -   `@label`, an optional `character` scalar
+-   `@consort`, an optional `data.frame`, to create the Consolidated Standards of Reporting Trials (CONSORT) diagram
 
 The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of collections, and the number of positive and negative subjects.
 
@@ -164,6 +166,18 @@ The pipeline above consists of five steps.
 x0
 ```
 
+Function `consort.panel()` presents @fig-consort, a Consolidated Standards of Reporting Trials (CONSORT) diagram of the creation of *`x0`*.
+
+```{r}
+#| fig-height: 2.5
+#| fig-width: 5
+#| fig-align: left
+#| fig-cap: 'CONSORT Diagram of *`x0`*, controlled at `FALSE(+) <= 0L`'
+#| label: fig-consort
+x0 |>
+  consort.panel()
+```
+
 
 Similarly, we create
 
@@ -183,6 +197,16 @@ x1 = m |>
 x1
 ```
 
+```{r}
+#| fig-height: 2.5
+#| fig-width: 5
+#| fig-align: left
+#| code-fold: true
+#| code-summary: 'A `panel` *`x1`*: CONSORT diagram'
+x1 |>
+  consort.panel()
+```
+
 
 ```{r}
 #| code-fold: true
@@ -198,6 +222,16 @@ x2 = m |>
 
 ```{r}
 x2
+```
+
+```{r}
+#| fig-height: 2.5
+#| fig-width: 5
+#| fig-align: left
+#| code-fold: true
+#| code-summary: 'A `panel` *`x2`*: CONSORT diagram'
+x2 |>
+  consort.panel()
 ```
 
 
@@ -216,6 +250,18 @@ x3 = m |>
 ```{r}
 x3
 ```
+
+
+```{r}
+#| fig-height: 2.5
+#| fig-width: 5
+#| fig-align: left
+#| code-fold: true
+#| code-summary: 'A `panel` *`x3`*: CONSORT diagram'
+x3 |>
+  consort.panel()
+```
+
 
 
 # Multiple Selected `panel`s

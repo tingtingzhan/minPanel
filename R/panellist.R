@@ -143,8 +143,6 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     'Variant-Collection' = v |> names(),
     'True(+)' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
     'False(+)' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
-    # 'True\u2795' = sprintf(fmt = '%d/%d', rowSums(m1.), ncol(m1.)),
-    # 'False\u2795' = sprintf(fmt = '%d/%d', rowSums(m0.), ncol(m0.)),
     'Variants in Collection' = v |>
       vapply(FUN = paste, collapse = '\n', FUN.VALUE = NA_character_),
     check.names = FALSE

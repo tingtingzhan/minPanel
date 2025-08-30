@@ -19,7 +19,6 @@ append_label <- function(x, info) {
     switch(EXPR = _, cum_false_positive = {
       sprintf(
         fmt = 'cumFalse(+) \u2264%d/%d', 
-        #fmt = 'cumFalse\u2795 \u2264%d/%d', 
         x |> cum_false_positive() |> max(),
         x@m0 |> ncol()
       )

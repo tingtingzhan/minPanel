@@ -28,7 +28,11 @@ Order of variants in \code{m0} and \code{m1} must be the same}
 
 \item{\code{id}}{\link[base]{list} of \link[base]{character} \link[base]{vector}s}
 
-\item{\code{label}}{\link[base]{character} scalar}
+\item{\code{label}}{(optional) \link[base]{character} scalar,
+a human-friendly description of the \linkS4class{panel}}
+
+\item{\code{consort}}{(optional) \link[base]{data.frame} to
+create a \link[consort]{consort_plot}}
 }}
 
 \keyword{internal}

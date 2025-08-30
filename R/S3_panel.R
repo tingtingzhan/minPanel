@@ -1,7 +1,4 @@
 
-# how to save the consort diagram for the full pipeline??
-
-
 
 
 #' @title Extract Rows of \linkS4class{panel}
@@ -22,7 +19,8 @@
     m1 = x@m1[i, , drop = FALSE],
     m0 = x@m0[i, , drop = FALSE],
     id = x@id[i],
-    label = x@label
+    label = x@label#,
+    #consort = x@consort[i, , drop = FALSE] # do NOT do anything here!!! 
   )
 }
 
@@ -51,46 +49,77 @@ subset.panel <- function(x, subset, append.label = FALSE, ...) {
   e <- substitute(subset)
   e. <- e
   
+  .symbol <- e[[1L]] |> 
+    deparse1() |> 
+    switch(EXPR = _, '<=' = '\u2264', '>=' = '\u2265', '<' = '<', '>' = '>')
+  
+  # invert symbol
+  .inv_symbol <- e[[1L]] |> 
+    deparse1() |> 
+    switch(EXPR = _, '<=' = '>', '>=' = '<', '<' = '\u2265', '>' = '\u2264')
+  
   e[[2L]] |>
     deparse1() |>
     switch(EXPR = _, true_positive = {
       e.[[2L]] <- call(name = 'true_positive', quote(x))
       id <- eval(e.)
+      .crit <- 'True(+)'
+      .labs <- sprintf(fmt = 'True(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m1 |> ncol())
     }, false_positive = {
       e.[[2L]] <- call(name = 'false_positive', quote(x))
       id <- eval(e.)
+      .crit <- 'False(+)'
+      .labs <- sprintf(fmt = 'False(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m0 |> ncol())
     }, cum_false_positive = {
       e.[[2L]] <- call(name = 'cum_false_positive', quote(x))
       id <- eval(e.)
+      .crit <- 'cumFalse(+)'
+      .labs <- sprintf(fmt = 'cumFalse(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m0 |> ncol())
     }, 'diff(cum_true_positive)' = {
       e.[[2L]] <- call(name = 'diff', call(name = 'cum_true_positive', quote(x))) # cannot use native pipe!
       id <- c(1L, which(eval(e.)) + 1L)
+      .crit <- 'diffTrue(+)'
+      .labs <- sprintf(fmt = 'diffTrue(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m1 |> ncol())
     })
 
   ret <- x[id, ] # `[.panel`
   
+  if (length(x@consort)) {
+    
+    # previously eligible
+    id0 <- x@consort |>
+      lapply(FUN = is.na) |>
+      Reduce(f = `&`)
+    if (is.logical(id)) {
+      if (sum(id0) != length(id)) stop('bug!')
+    } else if (is.integer(id)) {
+      # have not thought of a way to check..
+    }
+    newV <- character(length = length(id0))
+    if (is.logical(id)) {
+      newV[id0] <- ifelse(test = id, yes = NA_character_, no = .labs[2L])
+      # newV[!id0]; do nothing
+    } else {
+      newV[id0] <- NA_character_
+      newV[id0][-id] <- .labs[2L]
+    }
+    cst <- data.frame(x@consort, newV = newV)
+    attr(cst$newV, which = 'label') <- .crit
+    nc <- length(x@consort) # old consort data
+    names(cst)[nc+1L] <- sprintf(fmt = 'V%d', nc+1L) # attr-label kept :)
+    ret@consort <- cst
+    
+  } else {
+    
+    cst <- data.frame(V1 = ifelse(test = id, yes = NA_character_, no = .labs[2L]))
+    attr(cst$V1, which = 'label') <- .crit
+    ret@consort <- cst
+    
+  }
+  
   if (append.label) {
-    
-    sign_rel <- e[[1L]] |> 
-      deparse1() |> 
-      switch(EXPR = _, '<=' = '\u2264', '>=' = '\u2265', '<' = '<', '>' = '>')
-    
-    newlabel <- e[[2L]] |>
-      deparse1() |>
-      switch(EXPR = _, false_positive = {
-        sprintf(fmt = 'False(+) %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
-        #sprintf(fmt = 'False\u2795 %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
-      }, cum_false_positive = {
-        sprintf(fmt = 'cumFalse(+) %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
-        #sprintf(fmt = 'cumFalse\u2795 %s%d/%d', sign_rel, e[[3L]], x@m0 |> ncol())
-      })
-    
-    #if (length(ret@label)) {
-    #  ret@label <- paste(ret@label, newlabel, sep = '\n')
-    #} else ret@label <- newlabel
-    ret@label <- c(ret@label, newlabel) |>
+    ret@label <- c(ret@label, .labs[1L]) |>
       paste(collapse = '\n')
-
   }
   
   return(ret)
@@ -121,7 +150,26 @@ sort_by.panel <- function(x, y, ...) {
     eval() |>
     order(...) # e.g. `decreasing = TRUE`
   
-  x[id, ] # `[.panel`
+  ret <- x[id, ] # `[.panel`
+  
+  if (length(x@consort)) {
+    
+    id0 <- x@consort |>
+      lapply(FUN = is.na) |>
+      Reduce(f = `&`)
+    if (sum(id0) != length(id)) stop('bug!')
+    cst <- x@consort
+    cst[id0, ] <- cst[id0, , drop = FALSE][id, , drop = FALSE] # sort the previously eligible lines!!
+    ret@consort <- cst
+    
+  } else {
+    
+    # do nothing!!
+    # sorting does not change eligibility!!!
+    
+  }
+  
+  return(ret)
   
 }
 

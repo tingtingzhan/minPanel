@@ -13,7 +13,11 @@
 #' 
 #' @slot id \link[base]{list} of \link[base]{character} \link[base]{vector}s
 #' 
-#' @slot label \link[base]{character} scalar
+#' @slot label (optional) \link[base]{character} scalar, 
+#' a human-friendly description of the \linkS4class{panel}
+#' 
+#' @slot consort (optional) \link[base]{data.frame} to 
+#' create a \link[consort]{consort_plot}
 #' 
 #' @param m1,m0 see **Slots**
 #' 
@@ -25,7 +29,8 @@ setClass(Class = 'panel', slots = c(
   m1 = 'matrix',
   m0 = 'matrix',
   id = 'list',
-  label = 'character'
+  label = 'character',
+  consort = 'data.frame'
 ))
 
 
