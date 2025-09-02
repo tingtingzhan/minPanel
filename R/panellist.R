@@ -109,8 +109,9 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     unname() |> # just to be sure
     unlist(recursive = FALSE, use.names = TRUE)
   # unique.default() drops names!
-  v1 <- v0[!duplicated(v0)]
-  v <- v1[order(names(v1))]
+  v1 <- v0[!duplicated(v0)] # do NOT sort !!!!
+  #v <- v1[order(names(v1))]
+  v <- v1
   
   diff_v <- vs |>
     seq_along() |>

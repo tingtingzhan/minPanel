@@ -22,8 +22,8 @@
     
   )  
   
-  theme_minimal() %+replace%
-    theme(legend.key.spacing.y = unit(.03, "npc")) |> 
+  (theme_minimal() %+replace%
+    theme(legend.key.spacing.y = unit(.03, "npc"))) |> 
     theme_set()
   
 }

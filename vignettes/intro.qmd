@@ -152,7 +152,7 @@ x0 = m |>
 The pipeline above consists of five steps.
 
 1. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) selects the collections that identify at least one positive subjects *per collection* (Appendix @sec-positive).
-2. The `S3` method dispatch `subset.panel()` selects the collections that identify none of the negative subjects *per collection* (Appendix @sec-positive).  The [*per collection* criterion]{style="background-color: #FFFF00"} *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
+2. The `S3` method dispatch `subset.panel()` selects the collections that identify none of the negative subjects *per collection* (Appendix @sec-positive).  The [*per-collection* criterion]{style="background-color: #FFFF00"} *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
 3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-sortby) sorts the collections by their number of true positives.
 4. The `S3` method dispatch `subset.panel()` identifies the collections, so that each one collection identifies at least one more positive subjects than all the preceding collections (Appendix @sec-cum-positive).
 5. Function `append_label()` (Appendix @sec-appendlabel) summarizes the number of negative subjects identified *as a panel of collections* (Appendix @sec-cum-positive).  The [*panel-wise* criterion]{style="background-color: #FFFF00"} *`'panelFalse(+) ≤0/31'`* is `append`ed to the `@label` of the output.
@@ -318,7 +318,7 @@ z[1:3] |>
 
 ## For `subset.panel()`
 
-## by Multiple Criteria
+### by Multiple Criteria
 
 too difficult to parse..
 
@@ -328,7 +328,7 @@ m |>
   subset.panel(subset = (true_positive > 0L) & (false_positive <= 3L))
 ```
 
-## by Cumulative False Positives
+### by Cumulative False Positives
 
 left with too small panel
 
