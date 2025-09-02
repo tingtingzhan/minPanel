@@ -33,8 +33,9 @@ To cite this methodology, please use @Zezulinski25.
 Package **`minPanel`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
+-   **`consort`** [@consort, v`r packageVersion('consort')`], for Consolidated Standards of Reporting Trials (CONSORT) diagram
 -   **`flextable`** [@flextable, v`r packageVersion('flextable')`], for flexible table
--   **`ggplot2`** [@ggplot2], for visualization
+-   **`ggplot2`** [@ggplot2], **`patchwork`** [@patchwork], for visualization
 -   `r '\U1f5dd'` **`matrixStats`** [@matrixStats, v`r packageVersion('matrixStats')`], key dependency, for matrix algebra
 -   `r '\U1f5dd'` **`methods`** shipped with vanilla `r R.version.string`, key dependencies, for `S4` generic function and method dispatches
 -   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
@@ -76,11 +77,6 @@ library(flextable)
 ```
 
 
-```{r}
-#| echo: false
-theme_minimal() |> 
-  theme_set()
-```
 
 # Data Set
 
@@ -164,6 +160,18 @@ The pipeline above consists of five steps.
 
 ```{r}
 x0
+```
+
+Function `consort.panel()` (Appendix @sec-consort) presents a Consolidated Standards of Reporting Trials (CONSORT) diagram of the creation of a selected panel.  @fig-consort0 shows the creation of *`x0`*.
+
+```{r}
+#| fig-height: 2.5
+#| fig-width: 5
+#| fig-align: left
+#| fig-cap: 'CONSORT Diagram of *`x0`*'
+#| label: fig-consort0
+x0 |>
+  consort.panel()
 ```
 
 
@@ -250,8 +258,7 @@ The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` vi
 #| fig-cap: 'Operating Characteristics of `panellist` *`z`*'
 #| label: fig-panellist
 z |> 
-  autoplot() + 
-  theme(legend.key.spacing.y = unit(.03, "npc"))
+  autoplot()
 ```
 
 ## Print Selected Collections
@@ -286,6 +293,26 @@ The `S3` method dispatch `sort_by.panel()` 🚧
 ## `append_label()` {#sec-appendlabel}
 
 Function `append_label()` 🚧
+
+## `consort.panel()` {#sec-consort}
+
+Function `consort.panel()` ..
+
+
+## `consort.panellist()` {#sec-consort-panellist}
+
+Function `consort.panellist()` .. @fig-consort
+
+```{r}
+#| fig-height: 3.5
+#| fig-width: 10
+#| fig-align: left
+#| fig-cap: 'CONSORT Diagram of `panellist`'
+#| label: fig-consort
+z[1:3] |> 
+  consort.panellist(nrow = 1L)
+```
+
 
 # What We Don't Do
 

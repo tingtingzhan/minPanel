@@ -30,3 +30,34 @@ consort.panel <- function(x, ...) {
     consort_plot(data = _, orders = ord, side_box = names(cst), ...)
     
 } 
+
+
+
+#' @title [consort.panellist()]
+#' 
+#' @param x a [panellist]
+#' 
+#' @param ... additional parameters for function \link[patchwork]{wrap_plots}, 
+#' **not** for function [consort.panel()]
+#' 
+#' @keywords internal
+#' @importFrom consort build_grid
+#' @import patchwork
+#' @export
+consort.panellist <- function(x, ...) {
+  
+  x |> 
+    lapply(FUN = \(i) {
+      i |> 
+        consort.panel() |> 
+        build_grid() |>
+        wrap_elements()
+    }) |>
+    c(list(...)) |> 
+    do.call(what = 'wrap_plots', args = _)
+
+}
+  
+  
+  
+  
