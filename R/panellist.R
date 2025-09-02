@@ -70,7 +70,7 @@ autolayer.panellist <- function(object, ...) {
     geom_point(mapping = mp),
     geom_path(mapping = mp, linewidth = .3),
     scale_y_continuous(name = 'True Positives Identified', labels = label_percent(), limits = c(0, 1)),
-    scale_color_discrete(name = 'Total Number of\nVariant-Collections\nper Panel', labels = .label),
+    scale_color_discrete(name = 'Panels', labels = .label),
     labs(
       x = 'Number of Collections per Panel'
     )

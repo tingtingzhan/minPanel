@@ -73,8 +73,8 @@ subset.panel <- function(x, subset, append.label = FALSE, ...) {
     }, cum_false_positive = {
       e.[[2L]] <- call(name = 'cum_false_positive', quote(x))
       id <- eval(e.)
-      .crit <- 'cumFalse(+)'
-      .labs <- sprintf(fmt = 'cumFalse(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m0 |> ncol())
+      .crit <- 'panelFalse(+)'
+      .labs <- sprintf(fmt = 'panelFalse(+) %s%d/%d', c(.symbol, .inv_symbol), e.[[3L]], x@m0 |> ncol())
     }, 'diff(cum_true_positive)' = {
       e.[[2L]] <- call(name = 'diff', call(name = 'cum_true_positive', quote(x))) # cannot use native pipe!
       id <- c(1L, which(eval(e.)) + 1L)

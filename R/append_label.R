@@ -18,7 +18,7 @@ append_label <- function(x, info) {
   newlabel <- info |>
     switch(EXPR = _, cum_false_positive = {
       sprintf(
-        fmt = 'cumFalse(+) \u2264%d/%d', 
+        fmt = 'panelFalse(+) \u2264%d/%d', 
         x |> cum_false_positive() |> max(),
         x@m0 |> ncol()
       )

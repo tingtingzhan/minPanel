@@ -33,12 +33,11 @@ To cite this methodology, please use @Zezulinski25.
 Package **`minPanel`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
--   **`consort`** [@consort, v`r packageVersion('consort')`], for Consolidated Standards of Reporting Trials (CONSORT) diagram
 -   **`flextable`** [@flextable, v`r packageVersion('flextable')`], for flexible table
 -   **`ggplot2`** [@ggplot2], for visualization
 -   `r '\U1f5dd'` **`matrixStats`** [@matrixStats, v`r packageVersion('matrixStats')`], key dependency, for matrix algebra
 -   `r '\U1f5dd'` **`methods`** shipped with vanilla `r R.version.string`, key dependencies, for `S4` generic function and method dispatches
--   **`scales`** [@scales, v`r packageVersion('scales')`], for colour palette
+-   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
 
 
 ## Prerequisite
@@ -85,6 +84,8 @@ theme_minimal() |>
 
 # Data Set
 
+Data from @Zezulinski25 is included in package **`minPanel`**.
+
 Data object *`m1`* in package **`minPanel`** is a `logical` `matrix` of `r nrow(m1)` variants in `r ncol(m1)` early & late stage, i.e., *positive*, patients.
 
 ```{r}
@@ -123,7 +124,6 @@ Function `panel()` returns an object of `S4` class `'panel'`, with `slot`s
 -   `@m0`, a `logical` `matrix`, collections on rows and negative subjects on columns
 -   `@id`, a `list` of `character` `vector`s.  Each `character` `vector` contains the variants in a collection. 
 -   `@label`, an optional `character` scalar
--   `@consort`, an optional `data.frame`, to create the Consolidated Standards of Reporting Trials (CONSORT) diagram
 
 The `S4` method dispatch of `show` to `signature = 'panel'` prints the vital information, e.g., the number of collections, and the number of positive and negative subjects.
 
@@ -155,35 +155,23 @@ x0 = m |>
 
 The pipeline above consists of five steps.
 
-1. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) selects the collections that identify at least one positive subjects *per collection* (Appendix @sec-positive).  
-2. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) selects the collections that identify none of the negative subjects *per collection* (Appendix @sec-positive).  The criterion *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
-3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-sortby) sorts the collections by the number of true positives identified *per collection* (Appendix @sec-positive).
-4. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) identifies the collections, so that each one collection identifies at least one more positive subjects than all the preceding collections (Appendix @sec-cum-positive).
-5. Function `append_label()` (Appendix @sec-appendlabel) summarizes the number of negative subjects identified *as a panel of collections* (Appendix @sec-cum-positive).  The criterion *`'cumFalse(+) ≤0/31'`* is `append`ed to the `@label` of the output
+1. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) selects the collections that identify at least one positive subjects *per collection* (Appendix @sec-positive).
+2. The `S3` method dispatch `subset.panel()` selects the collections that identify none of the negative subjects *per collection* (Appendix @sec-positive).  The [*per collection* criterion]{style="background-color: #FFFF00"} *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
+3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-sortby) sorts the collections by their number of true positives.
+4. The `S3` method dispatch `subset.panel()` identifies the collections, so that each one collection identifies at least one more positive subjects than all the preceding collections (Appendix @sec-cum-positive).
+5. Function `append_label()` (Appendix @sec-appendlabel) summarizes the number of negative subjects identified *as a panel of collections* (Appendix @sec-cum-positive).  The [*panel-wise* criterion]{style="background-color: #FFFF00"} *`'panelFalse(+) ≤0/31'`* is `append`ed to the `@label` of the output.
 
 
 ```{r}
 x0
 ```
 
-Function `consort.panel()` (Appendix @sec-consort) presents @fig-consort, a Consolidated Standards of Reporting Trials (CONSORT) diagram of the creation of *`x0`*.
 
-```{r}
-#| fig-height: 2.5
-#| fig-width: 5
-#| fig-align: left
-#| fig-cap: 'CONSORT Diagram of *`x0`*, controlled at `FALSE(+) <= 0L`'
-#| label: fig-consort
-x0 |>
-  consort.panel()
-```
-
-
-Similarly, we create
+Next, we create
 
 ```{r}
 #| code-fold: true
-#| code-summary: 'A `panel` *`x1`*: controlled at `false_positive <= 1L`'
+#| code-summary: 'A `panel` *`x1`*: controlled at `false_positive <= 1L` per collection'
 x1 = m |>
   subset(subset = true_positive > 0L) |>
   subset(subset = false_positive <= 1L, append.label = TRUE) |>
@@ -192,79 +180,44 @@ x1 = m |>
   append_label(info = 'cum_false_positive')
 ```
 
-
+Panel *`x1`* has a *panel-wise* false positive of 7 out of 31 negative subjects.
+ 
 ```{r}
 x1
 ```
 
-```{r}
-#| fig-height: 2.5
-#| fig-width: 5
-#| fig-align: left
-#| code-fold: true
-#| code-summary: 'A `panel` *`x1`*: CONSORT diagram'
-x1 |>
-  consort.panel()
-```
-
+Similarly, we create
 
 ```{r}
 #| code-fold: true
-#| code-summary: 'A `panel` *`x2`*: controlled at `false_positive <= 2L`'
+#| code-summary: 'A `panel` *`x2`*: controlled at `false_positive <= 2L` per collection'
 x2 = m |>
   subset(subset = true_positive > 0L) |>
   subset(subset = false_positive <= 2L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
   append_label(info = 'cum_false_positive')
-```
-
-
-```{r}
 x2
 ```
 
-```{r}
-#| fig-height: 2.5
-#| fig-width: 5
-#| fig-align: left
-#| code-fold: true
-#| code-summary: 'A `panel` *`x2`*: CONSORT diagram'
-x2 |>
-  consort.panel()
-```
 
 
 ```{r}
 #| code-fold: true
-#| code-summary: 'A `panel` *`x3`*: controlled at `false_positive <= 3L`'
+#| code-summary: 'A `panel` *`x3`*: controlled at `false_positive <= 3L` per collection'
 x3 = m |>
   subset(subset = true_positive > 0L) |>
   subset(subset = false_positive <= 3L, append.label = TRUE) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L) |>
   append_label(info = 'cum_false_positive')
-```
-
-
-```{r}
 x3
 ```
 
 
-```{r}
-#| fig-height: 2.5
-#| fig-width: 5
-#| fig-align: left
-#| code-fold: true
-#| code-summary: 'A `panel` *`x3`*: CONSORT diagram'
-x3 |>
-  consort.panel()
-```
 
 
-
-# Multiple Selected `panel`s
+# Operating Characteristics
 
 Function `panellist()` collects multiple `panel`s.
 
@@ -281,7 +234,14 @@ z
 ```
 
 
-The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics in @fig-panellist.
+## Visualization
+
+The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics of panels *`x0`*, *`x1`*, *`x2`* and *`x3`* in @fig-panellist.  
+
+@fig-panellist concludes that the panel *`x1`*, controlled at per-collection false positive of `<=1/31` (colored [**green**]{style="color: #7CAE00"}), is the optimal among the four panels, as
+
+-   Panel *`x0`*, controlled at a more stringent criterion of per-collection false positive of `<=0/31`, detects substantially less true-positives.  In other words, compared to panel *`x1`*, panel *`x0`* loses substantial power to detect true-positive due to a more stringent control of false-positive.
+-   Panels *`x2`* and *`x3`*, controlled at less stringent criteria of per-collection false positive of `<=2/31` and `<=3/31`, respectively, have almost identical operating characteristics as panel *`x1`*.  In other words, compared to panel *`x1`*, panels *`x2`* and *`x3`* have no improvement on detection of true-positive, at the cost of higher false-positive.
 
 ```{r}
 #| fig-height: 3
@@ -293,6 +253,9 @@ z |>
   autoplot() + 
   theme(legend.key.spacing.y = unit(.03, "npc"))
 ```
+
+## Print Selected Collections
+
 
 The `S3` method dispatch `as_flextable.panellist()` displays the collections selected in each `panel`.  The collections that contain more than one variants are highlighted using the [light-yellow]{style="background-color: lightyellow"} color.
 
@@ -306,34 +269,29 @@ z |>
 
 ## True & False Positives {#sec-positive}
 
-Funtions `true_positive()` and `false_positive()` ..
+Funtions `true_positive()` and `false_positive()` 🚧
 
 ## Cumulative True & False Positives {#sec-cum-positive}
 
-Function `cum_true_positive()` and `cum_false_positive()` .. 
+Function `cum_true_positive()` and `cum_false_positive()` 🚧 
 
-## `subset.panel()` {#sec-subset} 
+## `subset.panel()` {#sec-subset}  
 
-The `S3` method dispatch `subset.panel()` ..
+The `S3` method dispatch `subset.panel()` 🚧
 
 ## `sort_by.panel()` {#sec-sortby}
 
-The `S3` method dispatch `sort_by.panel()` ..
-
+The `S3` method dispatch `sort_by.panel()` 🚧
 
 ## `append_label()` {#sec-appendlabel}
 
-Function `append_label()` ..
-
-## `consort.panel()` {#sec-consort}
-
-Function `consort.panel()` ..
+Function `append_label()` 🚧
 
 # What We Don't Do
 
 ## For `subset.panel()`
 
-### by Multiple Criteria
+## by Multiple Criteria
 
 too difficult to parse..
 
@@ -343,51 +301,18 @@ m |>
   subset.panel(subset = (true_positive > 0L) & (false_positive <= 3L))
 ```
 
-### by Cumulative False Positives
+## by Cumulative False Positives
 
 left with too small panel
 
 ```{r}
-z = m |>
+m |>
   subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 1L, append.label = TRUE) |>
+  subset(subset = false_positive <= 1L) |>
   sort_by(y = ~ true_positive, decreasing = TRUE) |>
   subset(subset = cum_false_positive <= 1L, append.label = TRUE) |>
   subset(subset = diff(cum_true_positive) > 0L)
 ```
-
-```{r}
-#| fig-height: 3
-#| fig-width: 5
-#| fig-align: left
-z |>
-  consort.panel()
-```
-
-# Terms & Abbreviations
-
-| Term / Abbreviation | Description |
-|------------------------------------|------------------------------------|
-| CRAN, R | The Comprehensive R Archive Network, <https://cran.r-project.org> |
-| `Depends`, `Imports`, `Suggests`, `Enhances` | [*Writing R Extensions*, Section 1.1.3 *Package Dependencies*](https://cran.r-project.org/doc/manuals/r-devel/R-exts.html#Package-Dependencies) |
-| [`|>`](https://search.r-project.org/R/refmans/base/html/pipeOp.html) | Forward pipe operator introduced since R version 4.1.0 |
-| [`append`](https://search.r-project.org/R/refmans/base/html/append.html) | Append to an R object |
-| [`autoplot`](https://search.r-project.org/CRAN/refmans/ggplot2/html/autoplot.html), [`autolayer`](https://search.r-project.org/CRAN/refmans/ggplot2/html/autolayer.html) | Create a Grammar of Graphics (layer), from package **`ggplot2`** [@ggplot2] |
-| [`consort_plot`](https://search.r-project.org/CRAN/refmans/consort/html/consort_plot.html) | Consolidated Standards of Reporting Trials ([CONSORT](https://en.wikipedia.org/wiki/Consolidated_Standards_of_Reporting_Trials)) diagram, from package **`consort`** [@consort] |
-| [`flextable`](https://search.r-project.org/CRAN/refmans/flextable/html/flextable.html), [`as_flextable`](https://search.r-project.org/CRAN/refmans/flextable/html/as_flextable.html) | (Transform an R object into) flexible table, from package **`flextable`** [@flextable] |
-| [`logical`](https://search.r-project.org/R/refmans/base/html/logical.html) | Logical variable |
-| [`matrix`](https://search.r-project.org/R/refmans/base/html/matrix.html) | Matrix |
-| `S3`, `generic`, [`methods`](https://search.r-project.org/R/refmans/utils/html/methods.html) | `S3` object oriented system, [`UseMethod`](https://search.r-project.org/R/refmans/base/html/UseMethod.html); [`getS3method`](https://search.r-project.org/R/refmans/utils/html/getS3method.html); <https://adv-r.hadley.nz/s3.html> |
-| `S4`, `generic`, `methods` | `S4` object oriented system, [`isS4`](https://search.r-project.org/R/refmans/base/html/isS4.html); [`setClass`](https://search.r-project.org/R/refmans/methods/html/setClass.html); [`setMethod`](https://search.r-project.org/R/refmans/methods/html/setMethod.html); [`getMethod`](https://search.r-project.org/R/refmans/methods/html/getMethod.html); <https://adv-r.hadley.nz/s4.html> |
-| [`search`](https://search.r-project.org/R/refmans/base/html/search.html) | Search path |
-| [`show`](https://search.r-project.org/R/refmans/methods/html/show.html) | Show an object from a formal class |
-| [`signature`](https://search.r-project.org/R/refmans/methods/html/GenericFunctions.html) | Various tools for managing `S4` generic functions |
-| [`slot`](https://search.r-project.org/R/refmans/methods/html/slot.html), [`` `@` ``](https://search.r-project.org/R/refmans/base/html/slotOp.html) | (Extract) a slot in an object from a formal class |
-| [`sort_by`](https://search.r-project.org/R/refmans/base/html/sort_by.html) | Sort an R object by certain criterion |
-| [`subset`](https://search.r-project.org/R/refmans/base/html/subset.html) | Subset an R object |
-| [`theme`](https://search.r-project.org/CRAN/refmans/ggplot2/html/theme.html) | Modify components of a theme for Grammar of Graphics, from package **`ggplot2`** [@ggplot2] |
-
-
 
 
 # References
