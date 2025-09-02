@@ -137,7 +137,7 @@ m@id[[8L]] |>
 ```
 
 
-# Selected `panel`
+# Selected `panel` {#sec-select-panel}
 
 ```{r}
 x0 = m |>
@@ -255,7 +255,7 @@ The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` vi
 #| fig-height: 3
 #| fig-width: 6
 #| fig-align: left
-#| fig-cap: 'Operating Characteristics of `panellist` *`z`*'
+#| fig-cap: 'Operating characteristics of `panellist` *`z`*'
 #| label: fig-panellist
 z |> 
   autoplot()
@@ -286,6 +286,46 @@ Function `cum_true_positive()` and `cum_false_positive()` 🚧
 
 The `S3` method dispatch `subset.panel()` 🚧
 
+### by Panel-Wise False Positives
+
+Panel *`x1`* in @sec-select-panel, controlled at `false_positive <= 1L` per collection, has a substantial panel-wise false positive rate
+
+```{r}
+x1
+```
+
+User may impose an additional criteria of panel-wise false positive of 5 or less out of 31 negative subjects.
+
+```{r}
+#| code-fold: true
+#| code-summary: '**Example**: additional criteria of panel-wise false positive `<=5`'
+x1a = m |>
+  subset(subset = true_positive > 0L) |>
+  subset(subset = false_positive <= 1L, append.label = TRUE) |>
+  sort_by(y = ~ true_positive, decreasing = TRUE) |>
+  subset(subset = diff(cum_true_positive) > 0L) |>
+  subset(subset = cum_false_positive <= 5L, append.label = TRUE)
+```
+
+```{r}
+x1a
+```
+
+@fig-panel-a shows ..
+
+```{r}
+#| code-fold: true
+#| code-summary: '**Figure**: operating characteristics of *`x0`*, *`x1`* and *`x1a`*'
+#| fig-height: 3
+#| fig-width: 6
+#| fig-align: left
+#| label: fig-panel-a
+#| fig-cap: 'Operating characteristics of *`x0`*, *`x1`* and *`x1a`*'
+panellist(x0, x1, x1a) |>
+  autoplot()
+```
+
+
 ## `sort_by.panel()` {#sec-sortby}
 
 The `S3` method dispatch `sort_by.panel()` 🚧
@@ -294,16 +334,26 @@ The `S3` method dispatch `sort_by.panel()` 🚧
 
 Function `append_label()` 🚧
 
-## `consort.panel()` {#sec-consort}
+## CONSORT Diagram
 
-Function `consort.panel()` ..
+### `consort.panel()` {#sec-consort}
+
+Function `consort.panel()` creates a CONSORT diagram of the creation of a `panel`, using package **`consort`** [@consort].  
+
+Function `consort.panel()` is a wrapper of the function `consort::consort_plot()`, which returns an object of class `'consort'`.
+
+Examples using function `consort.panel()` are provided in @sec-select-panel.
 
 
-## `consort.panellist()` {#sec-consort-panellist}
+### `consort.panellist()` {#sec-consort-panellist}
 
-Function `consort.panellist()` .. @fig-consort
+Function `consort.panellist()` organizes the CONSORT diagrams of each `panel` member in a `panellist` in a collage, using packages **`consort`** [@consort] and **`patchwork`** [@patchwork].  
+
+@fig-consort presents side-by-side the selection of collections in *`x0`*, *`x1`*, and *`x2`*.
 
 ```{r}
+#| code-fold: true
+#| code-summary: '**Figure**: CONSORT diagrams of *`x0`*, *`x1`*, and *`x2`*'
 #| fig-height: 3.5
 #| fig-width: 10
 #| fig-align: left
@@ -328,18 +378,6 @@ m |>
   subset.panel(subset = (true_positive > 0L) & (false_positive <= 3L))
 ```
 
-### by Cumulative False Positives
-
-left with too small panel
-
-```{r}
-m |>
-  subset(subset = true_positive > 0L) |>
-  subset(subset = false_positive <= 1L) |>
-  sort_by(y = ~ true_positive, decreasing = TRUE) |>
-  subset(subset = cum_false_positive <= 1L, append.label = TRUE) |>
-  subset(subset = diff(cum_true_positive) > 0L)
-```
 
 
 # References
