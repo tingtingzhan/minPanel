@@ -109,9 +109,7 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
     unname() |> # just to be sure
     unlist(recursive = FALSE, use.names = TRUE)
   # unique.default() drops names!
-  v1 <- v0[!duplicated(v0)] # do NOT sort !!!!
-  #v <- v1[order(names(v1))]
-  v <- v1
+  v <- v0[!duplicated(v0)] # do NOT sort !!!!
   
   diff_v <- vs |>
     seq_along() |>
@@ -127,14 +125,14 @@ as_flextable.panellist <- function(x, ...) { # orig.panel,
   nv <- diff_v |>
     lengths(use.names = FALSE) 
   
-  nvr <- v |> lengths(use.names = FALSE) # multiple variants per collection
+  nvr <- v |> 
+    lengths(use.names = FALSE) # multiple variants per collection
   
   m1. <- mapply(FUN = \(x, v) {
     x@m1[v, , drop = FALSE]
   }, x = x, v = diff_v, SIMPLIFY = FALSE) |>
     do.call(what = rbind, args = _)
-  #m1. <- m1[v, , drop = FALSE]
-  #m0. <- m0[v, , drop = FALSE]
+  
   m0. <- mapply(FUN = \(x, v) {
     x@m0[v, , drop = FALSE]
   }, x = x, v = diff_v, SIMPLIFY = FALSE) |>
