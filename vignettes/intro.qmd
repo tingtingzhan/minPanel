@@ -294,7 +294,7 @@ Panel *`x1`* in @sec-select-panel, controlled at `false_positive <= 1L` per coll
 x1
 ```
 
-User may impose an additional criteria of panel-wise false positive of 5 or less out of 31 negative subjects.
+User may impose an additional criterion of panel-wise false positive of 5 or less out of 31 negative subjects.
 
 ```{r}
 #| code-fold: true
