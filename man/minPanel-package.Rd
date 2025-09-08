@@ -4,9 +4,9 @@
 \name{minPanel-package}
 \alias{minPanel}
 \alias{minPanel-package}
-\title{minPanel: Aejaz}
+\title{minPanel: Minimum Panel by Sensitivity and Specificity}
 \description{
-To perform advanced manipulation of R packages.
+Minimum panel by sensitivity and specificity.
 }
 \author{
 \strong{Maintainer}: Tingting Zhan \email{tingtingzhan@gmail.com} [copyright holder]

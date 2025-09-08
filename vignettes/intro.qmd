@@ -80,6 +80,10 @@ library(flextable)
 
 # Data Set
 
+Study data should be described in a peer-reviewed manuscript in the following language.
+
+> `<Biology>` samples from $N=N_1$ `<positive.subjects>` were obtained from our collaborators `<institutionA-1>`, `<institutionA-2>` under approved IRB protocols.  `<Biology>` samples from $N=N_0$ `<negative.subjects>` from `<institutionB-1>`, `<institutionB-2>` were used as controls.  Demographic information of human subjects is shown in `<table>` and `<supplementary materials>`.
+
 Data from @Zezulinski25 is included in package **`minPanel`**.
 
 Data object *`m1`* in package **`minPanel`** is a `logical` `matrix` of `r nrow(m1)` variants in `r ncol(m1)` early & late stage, i.e., *positive*, patients.
@@ -137,7 +141,12 @@ m@id[[8L]] |>
 ```
 
 
-# Selected `panel` {#sec-select-panel}
+# Selected Ordered-`panel` {#sec-select-panel}
+
+Methodology should be described in a peer-reviewed manuscript in the following language.
+
+> A minimal panel of variants-collections is determined using the following steps: (1) we exclude the collections that identify none of the `<positive.subjects>` *per collection*; (2) we exclude the collections that identify at least `1` of the `<negative.subjects>` *per collection*; (3) we sort the remaining collections by the number of `<positive.subjects>` identified *per collection*, from most to least; (4) we exclude  the collections that identify no more `<positive.subjects>` than all the preceding collections.  Such panel of collections is ***ordered***, i.e., a researcher may reduce the size of the panel by keeping the collections in the top of the panel and dropping those in the bottom of the panel.  `<Figure>` is the CONSORT diagram of this selection procedure. This methodology is implemented in R (@R) package **`minPanel`** (citation coming soon).
+
 
 ```{r}
 x0 = m |>
@@ -153,7 +162,7 @@ The pipeline above consists of five steps.
 
 1. The `S3` method dispatch `subset.panel()` (Appendix @sec-subset) selects the collections that identify at least one positive subjects *per collection* (Appendix @sec-positive).
 2. The `S3` method dispatch `subset.panel()` selects the collections that identify none of the negative subjects *per collection* (Appendix @sec-positive).  The [*per-collection* criterion]{style="background-color: #FFFF00"} *`'False(+) ≤0/31'`* is `append`ed to the `@label` of the output.
-3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-sortby) sorts the collections by their number of true positives.
+3. The `S3` method dispatch `sort_by.panel()` (Appendix @sec-sortby) sorts the collections by their number of positive subjects identified *per collection* (Appendix @sec-positive), in `decreasing` order.
 4. The `S3` method dispatch `subset.panel()` identifies the collections, so that each one collection identifies at least one more positive subjects than all the preceding collections (Appendix @sec-cum-positive).
 5. Function `append_label()` (Appendix @sec-appendlabel) summarizes the number of negative subjects identified *as a panel of collections* (Appendix @sec-cum-positive).  The [*panel-wise* criterion]{style="background-color: #FFFF00"} *`'panelFalse(+) ≤0/31'`* is `append`ed to the `@label` of the output.
 
@@ -243,6 +252,11 @@ z
 
 
 ## Visualization
+
+The operating characteristics should be described in a peer-reviewed manuscript in the following language.
+
+> `<Figure>` presents the operating characteristics of multiple ordered-panels of variants-collections.  The $x$-axis is the number of collections from the top of each ordered-panel.  The $y$-axis is the percentage of `<positive.subjects>` identified.  An operating characteristics curve moves towards the upper-left corner to indicate a better performance, i.e., higer percentage of `<positive.subjects>` identified with lower number of collections in the ordered-panel. Investigators should evaluate multiple operating characteristics curves by their control on number of `<false.subjects>` identified.
+
 
 The `S3` method dispatches `autoplot.panellist()` and `autolayer.panellist()` visualize the operating characteristics of panels *`x0`*, *`x1`*, *`x2`* and *`x3`* in @fig-panellist.  
 
